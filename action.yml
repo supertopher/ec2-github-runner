@@ -11,9 +11,17 @@ inputs:
         - 'start' - to start a new runner;
         - 'stop' - to stop the previously created runner.
     required: true
-  github-token:
+  auth-app-id:
     description: >-
-      GitHub Personal Access Token with the 'repo' scope assigned.
+      The OAuth App ID to use for authentication against GitHub.
+    required: true
+  auth-private-key:
+    description: >-
+      The OAuth private key to use for authenticating the OAuth app.
+    required: true
+  auth-installation-id:
+    description: >-
+      The OAuth installation id to identify our installation.
     required: true
   ec2-image-id:
     description: >-

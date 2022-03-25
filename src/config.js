@@ -5,7 +5,9 @@ class Config {
   constructor() {
     this.input = {
       mode: core.getInput('mode'),
-      githubToken: core.getInput('github-token'),
+      authAppId: core.getInput('auth-app-id'),
+      authPrivateKey: core.getInput('auth-private-key'),
+      authInstallationId: core.getInput('auth-installation-id'),
       ec2ImageId: core.getInput('ec2-image-id'),
       ec2InstanceType: core.getInput('ec2-instance-type'),
       subnetId: core.getInput('subnet-id'),
@@ -38,8 +40,8 @@ class Config {
       throw new Error(`The 'mode' input is not specified`);
     }
 
-    if (!this.input.githubToken) {
-      throw new Error(`The 'github-token' input is not specified`);
+    if (!this.input.authAppId || !this.input.authInstallationId || !this.input.authPrivateKey) {
+      throw new Error(`The required oauth inputs are not complete`);
     }
 
     if (this.input.mode === 'start') {
