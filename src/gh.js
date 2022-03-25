@@ -1,17 +1,17 @@
 const core = require('@actions/core');
-const { GitHub } = require('@actions/github/lib/utils');
-const retry = require('@octokit/plugin-retry');
+const { Octokit } = require('@octokit/rest');
 const { createAppAuth } = require('@octokit/auth-app');
-const throttling = require('@octokit/plugin-throttling');
+const { retry } = require('@octokit/plugin-retry');
+const { throttling } = require('@octokit/plugin-throttling');
 const _ = require('lodash');
 const config = require('./config');
 
-const Octokit = GitHub.plugin(retry, throttling);
 let octokit;
 
 function getOctokit() {
   if (!octokit) {
-    octokit = new Octokit({
+    const ConfiguredOctokit = Octokit.plugin(retry, throttling);
+    octokit = new ConfiguredOctokit({
       authStrategy: createAppAuth,
       auth: {
         appId: config.input.authAppId,
