@@ -6,10 +6,12 @@ const config = require('./config');
 function buildUserDataScript(githubRegistrationToken, label) {
   var labels
   if (config.input.label) {
-    labels = "${label},${config.input.label}"
+    core.info(`detected user input label ${config.input.label}`)
+    labels = `${label},${config.input.label}`
   } else {
     labels = label
   }
+  core.info(`labels set to ${labels}`)
   if (config.input.runnerHomeDir) {
     // If runner home directory is specified, we expect the actions-runner software (and dependencies)
     // to be pre-installed in the AMI, so we simply cd into that directory and then start the runner
