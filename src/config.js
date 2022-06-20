@@ -1,5 +1,6 @@
 const core = require('@actions/core');
 const github = require('@actions/github');
+const fs = require('fs');
 
 class Config {
   constructor() {
@@ -56,7 +57,12 @@ class Config {
   }
 
   generateUniqueLabel() {
-    return Math.random().toString(36).substr(2, 5);
+    // return Math.random().toString(36).substr(2, 5);
+    var adjectives = JSON.parse(fs.readFileSync(__dirname + "/resources/adjectives.json"));
+    var nouns = JSON.parse(fs.readFileSync(__dirname + "/resources/nouns.json"));
+    var randomAdjective = adjectives[Math.floor(Math.random() * adjectives.length)];
+    var randomNoun = nouns[Math.floor(Math.random() * nouns.length)];
+    return randomAdjective + "-" + randomNoun
   }
 }
 
