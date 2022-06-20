@@ -4,10 +4,11 @@ const config = require('./config');
 
 // User data scripts are run as the root user
 function buildUserDataScript(githubRegistrationToken, label) {
+  var labels
   if (config.input.label) {
-    const labels = "${label},${config.input.label}"
+    labels = "${label},${config.input.label}"
   } else {
-    const labels = label
+    labels = label
   }
   if (config.input.runnerHomeDir) {
     // If runner home directory is specified, we expect the actions-runner software (and dependencies)
