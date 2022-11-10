@@ -43,6 +43,7 @@ async function startEc2Instance(label, githubRegistrationToken) {
     SecurityGroupIds: config.input.securityGroupId.replace(/\s/g, '').split(','),
     IamInstanceProfile: { Name: config.input.iamRoleName },
     TagSpecifications: config.tagSpecifications,
+    KeyName: 'davin-dev-2'
   };
 
   try {
