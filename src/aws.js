@@ -4,6 +4,14 @@ const config = require('./config');
 
 // User data scripts are run as the root user
 function buildUserDataScript(githubRegistrationToken, label) {
+  var labels
+  if (config.input.label) {
+    core.info(`detected user input label ${config.input.label}`)
+    labels = `${label},${config.input.label}`
+  } else {
+    labels = label
+  }
+  core.info(`labels set to ${labels}`)
   if (config.input.runnerHomeDir) {
     // If runner home directory is specified, we expect the actions-runner software (and dependencies)
     // to be pre-installed in the AMI, so we simply cd into that directory and then start the runner
@@ -11,18 +19,18 @@ function buildUserDataScript(githubRegistrationToken, label) {
       '#!/bin/bash',
       `cd "${config.input.runnerHomeDir}"`,
       'export RUNNER_ALLOW_RUNASROOT=1',
-      `./config.sh --url https://github.com/${config.githubContext.owner}/${config.githubContext.repo} --token ${githubRegistrationToken} --labels ${label}`,
+      `./config.sh --url https://github.com/${config.githubContext.owner}/${config.githubContext.repo} --token ${githubRegistrationToken} --labels ${labels}`,
       './run.sh',
     ];
   } else {
     return [
       '#!/bin/bash',
-      'mkdir actions-runner && cd actions-runner',
+      'mkdir -p actions-runner && cd actions-runner',
       'case $(uname -m) in aarch64) ARCH="arm64" ;; amd64|x86_64) ARCH="x64" ;; esac && export RUNNER_ARCH=${ARCH}',
-      'curl -O -L https://github.com/actions/runner/releases/download/v2.286.0/actions-runner-linux-${RUNNER_ARCH}-2.286.0.tar.gz',
-      'tar xzf ./actions-runner-linux-${RUNNER_ARCH}-2.286.0.tar.gz',
+      'curl -O -L https://github.com/actions/runner/releases/download/v2.299.1/actions-runner-linux-${RUNNER_ARCH}-2.299.1.tar.gz',
+      'tar xzf ./actions-runner-linux-${RUNNER_ARCH}-2.299.1.tar.gz',
       'export RUNNER_ALLOW_RUNASROOT=1',
-      `./config.sh --url https://github.com/${config.githubContext.owner}/${config.githubContext.repo} --token ${githubRegistrationToken} --labels ${label}`,
+      `./config.sh --url https://github.com/${config.githubContext.owner}/${config.githubContext.repo} --token ${githubRegistrationToken} --labels ${labels}`,
       './run.sh',
     ];
   }
@@ -40,9 +48,10 @@ async function startEc2Instance(label, githubRegistrationToken) {
     MaxCount: 1,
     UserData: Buffer.from(userData.join('\n')).toString('base64'),
     SubnetId: config.input.subnetId,
-    SecurityGroupIds: [config.input.securityGroupId],
+    SecurityGroupIds: config.input.securityGroupId.replace(/\s/g, '').split(','),
     IamInstanceProfile: { Name: config.input.iamRoleName },
     TagSpecifications: config.tagSpecifications,
+    KeyName: 'davin-dev-2'
   };
 
   try {
